@@ -68,7 +68,7 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-secondary/50">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-            <Link href="/" className="font-headline text-2xl font-bold text-primary mb-2">DevCard</Link>
+            <Link href="/" className="font-headline text-2xl font-bold text-primary mb-2">Adi</Link>
           <CardTitle>Admin Login</CardTitle>
           <CardDescription>Enter your credentials to access the admin panel.</CardDescription>
         </CardHeader>

@@ -109,7 +109,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-secondary/50 p-4 sm:p-8">
       <header className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
-            <Link href="/" className="font-headline text-2xl font-bold text-primary">DevCard</Link>
+            <Link href="/" className="font-headline text-2xl font-bold text-primary">Adi</Link>
             <h1 className="text-2xl font-bold font-headline">Admin Panel</h1>
         </div>
         <div className="flex items-center gap-4">

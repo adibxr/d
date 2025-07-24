@@ -95,7 +95,7 @@ function Header() {
                 height={40}
                 className="rounded-full object-cover border-2 border-primary/50"
               />
-            <span className="hidden sm:inline">DevCard</span>
+            <span className="hidden sm:inline">Adi</span>
           </Link>
           <div className="flex items-center gap-2">
             <nav className="hidden md:flex items-center gap-1 bg-muted/50 p-1 rounded-full">
