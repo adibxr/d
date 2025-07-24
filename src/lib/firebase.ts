@@ -1,6 +1,6 @@
 'use client';
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, User } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCD5FoayYfZlMeNHph5QCBxVR7FF851R6w",
@@ -14,9 +14,8 @@ const firebaseConfig = {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
 
 const ADMIN_UID = "e95GbAquQtbYOQjW0fucGqjFuRi1";
 
-export { auth, provider, onAuthStateChanged, signInWithPopup, signOut, ADMIN_UID };
+export { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, ADMIN_UID };
 export type { User };

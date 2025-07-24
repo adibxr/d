@@ -8,7 +8,7 @@ import { Github, Linkedin, Twitter, Mail, ArrowRight, Rss, User as UserIcon, Log
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { auth, provider, signInWithPopup, signOut } from '@/lib/firebase';
+import { auth, signOut } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -48,22 +48,12 @@ const projects = [
 const socialLinks = [
   { icon: Github, href: "https://github.com/adibxr", label: "GitHub" },
   { icon: Linkedin, href: "https://www.linkedin.com/in/adityasingh-02/", label: "LinkedIn" },
-  { icon: Twitter, href: "https://twitter.com/immortal_adi", label: "Twitter" },
   { icon: Mail, href: "mailto:adityasingh.02@outlook.com", label: "Email" },
 ];
 
 function AuthButton() {
     const { user, loading } = useAuth();
     const { toast } = useToast();
-
-    const handleSignIn = async () => {
-        try {
-            await signInWithPopup(auth, provider);
-            toast({ title: "Signed In", description: "You have successfully signed in." });
-        } catch (error) {
-            toast({ variant: "destructive", title: "Sign In Failed", description: "Could not sign you in with Google." });
-        }
-    };
 
     const handleSignOut = async () => {
         try {
@@ -85,7 +75,7 @@ function AuthButton() {
                     <Button variant="ghost" size="icon" className="rounded-full">
                         <Avatar className="w-8 h-8">
                            <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
-                           <AvatarFallback>{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                           <AvatarFallback>{user.email?.charAt(0).toUpperCase() || 'A'}</AvatarFallback>
                         </Avatar>
                     </Button>
                 </DropdownMenuTrigger>
@@ -103,8 +93,10 @@ function AuthButton() {
     }
 
     return (
-        <Button variant="ghost" size="icon" onClick={handleSignIn} aria-label="Sign In">
-            <LogIn />
+        <Button variant="ghost" size="icon" asChild>
+            <Link href="/login" aria-label="Sign In">
+                <LogIn />
+            </Link>
         </Button>
     );
 }
