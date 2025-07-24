@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useTransition, useId, useEffect } from "react";
@@ -45,9 +46,9 @@ const PortfolioForPrint = ({ projects }: { projects: Project[] }) => {
     return (
       <div className="print-container hidden print:block text-black bg-white p-8">
         <div className="text-center mb-12">
-            <h1 className="font-headline text-5xl font-bold mb-2">Aditya Singh</h1>
+            <h1 className="font-headline text-5xl font-bold mb-2">Aditya Raj</h1>
             <p className="text-xl">Frontend Developer</p>
-            <p className="text-sm">adityasingh.02@outlook.com | immortaladi.live</p>
+            <p className="text-sm">admin@immortaladi.live | immortaladi.live</p>
         </div>
         <div className="mb-12">
             <h2 className="font-headline text-3xl font-bold border-b-2 border-gray-800 pb-2 mb-4">About Me</h2>

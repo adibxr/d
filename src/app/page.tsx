@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Github, Linkedin, Twitter, Mail, ArrowRight, Rss, User as UserIcon, LogIn, LogOut, Loader2 } from 'lucide-react';
+import { Github, Linkedin, Twitter, Mail, ArrowRight, Rss, User as UserIcon, LogIn, LogOut, Loader2, Instagram } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
@@ -19,8 +19,10 @@ import type { Project } from '@/lib/types';
 
 const socialLinks = [
   { icon: Github, href: "https://github.com/adibxr", label: "GitHub" },
+  { icon: Twitter, href: "https://twitter.com/adibxr", label: "Twitter" },
+  { icon: Instagram, href: "https://instagram.com/adi.bxr", label: "Instagram" },
   { icon: Linkedin, href: "https://www.linkedin.com/in/adityasingh-02/", label: "LinkedIn" },
-  { icon: Mail, href: "mailto:adityasingh.02@outlook.com", label: "Email" },
+  { icon: Mail, href: "mailto:admin@immortaladi.live", label: "Email" },
 ];
 
 function AuthButton() {
@@ -81,7 +83,7 @@ function Header() {
           <Link href="/" className="text-2xl font-headline font-bold text-primary flex items-center gap-2">
             <Image 
                 src="https://i.imgur.com/26rM2A5.png"
-                alt="Aditya Singh"
+                alt="Aditya Raj"
                 width={40}
                 height={40}
                 className="rounded-full object-cover border-2 border-primary/50"
@@ -195,7 +197,7 @@ export default function Home() {
             >
               <Image 
                 src="https://i.imgur.com/26rM2A5.png"
-                alt="Aditya Singh"
+                alt="Aditya Raj"
                 width={200}
                 height={200}
                 className="rounded-full object-cover border-4 border-primary shadow-lg"
@@ -207,7 +209,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0, transition: { delay: 0.4 } }}
             >
-              Aditya Singh
+              Aditya Raj
             </motion.h1>
             <motion.p 
               className="text-xl md:text-2xl text-primary font-medium mb-6"
@@ -298,7 +300,7 @@ export default function Home() {
       
       <footer className="py-8 border-t">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Aditya Singh. All Rights Reserved.
+          &copy; {new Date().getFullYear()} Aditya Raj. All Rights Reserved.
         </div>
       </footer>
     </div>
