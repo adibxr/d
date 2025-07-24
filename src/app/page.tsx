@@ -48,7 +48,7 @@ function AuthButton() {
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="rounded-full">
                         <Avatar className="w-8 h-8">
-                           <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
+                           <AvatarImage src={user.photoURL || 'https://raw.githubusercontent.com/adibxr/public/main/logo.png'} alt={user.displayName || 'User'} />
                            <AvatarFallback>{user.email?.charAt(0).toUpperCase() || 'A'}</AvatarFallback>
                         </Avatar>
                     </Button>
@@ -82,7 +82,7 @@ function Header() {
         <div className="flex justify-between items-center h-12">
           <Link href="/" className="text-2xl font-headline font-bold text-primary flex items-center gap-2">
             <Image 
-                src="https://i.imgur.com/26rM2A5.png"
+                src="https://raw.githubusercontent.com/adibxr/public/main/logo.png"
                 alt="Aditya Raj"
                 width={40}
                 height={40}
@@ -196,7 +196,7 @@ export default function Home() {
               animate={{ scale: 1, transition: { delay: 0.2, type: 'spring' } }}
             >
               <Image 
-                src="https://i.imgur.com/26rM2A5.png"
+                src="https://raw.githubusercontent.com/adibxr/public/main/logo.png"
                 alt="Aditya Raj"
                 width={200}
                 height={200}
