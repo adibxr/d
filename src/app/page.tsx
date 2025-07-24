@@ -239,7 +239,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0, transition: { delay: 0.6 } }}
             >
-              I'm a passionate Front-end developer from India with a knack for creating beautiful, intuitive, and high-performing web experiences. I love turning complex problems into simple, elegant solutions.
+              Hi! My name is Aditya. I'm a web developer and digital visual artist. I love creating things that exist on the internet. My interest in web development started in 2021 when I decided to upload my digital concept arts online.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
