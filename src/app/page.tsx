@@ -20,7 +20,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { CursorTracker } from '@/components/cursor-tracker';
 
 
 const socialLinks = [
@@ -200,7 +199,6 @@ export default function Home() {
 
   return (
     <div className="bg-background text-foreground">
-      <CursorTracker />
       <Header />
       
       <main className="container mx-auto px-4 pt-28">
