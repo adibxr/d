@@ -82,6 +82,14 @@ function AuthButton() {
 }
 
 function Header() {
+    const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+        e.preventDefault();
+        const element = document.querySelector(href);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <motion.header 
             className="fixed top-4 left-0 right-0 z-50 flex justify-center"
@@ -103,9 +111,9 @@ function Header() {
               </Link>
               <div className="flex items-center gap-1">
                 <nav className="hidden md:flex items-center gap-1 bg-muted/50 p-1 rounded-full">
-                    <Link href="#about" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">About</Link>
-                    <Link href="#projects" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Projects</Link>
-                    <Link href="#contact" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Contact</Link>
+                    <a href="#about" onClick={(e) => handleScroll(e, '#about')} className="cursor-pointer text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">About</a>
+                    <a href="#projects" onClick={(e) => handleScroll(e, '#projects')} className="cursor-pointer text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Projects</a>
+                    <a href="#contact" onClick={(e) => handleScroll(e, '#contact')} className="cursor-pointer text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Contact</a>
                 </nav>
                 <div className="flex items-center gap-1">
                     <AuthButton />
