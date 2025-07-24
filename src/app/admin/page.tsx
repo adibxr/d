@@ -100,8 +100,10 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    if (user) {
+        fetchProjects();
+    }
+  }, [user]);
 
 
   const handleAddNew = () => {
@@ -129,17 +131,17 @@ export default function AdminDashboard() {
         if (projectData.id) {
             const { id, ...data } = projectData;
             await setDoc(doc(db, "projects", id), data);
-            setProjects(projects.map((p) => (p.id === id ? projectData as Project : p)));
+            setProjects(projects.map((p) => (p.id === id ? { ...p, ...data } : p)));
              toast({ title: "Success", description: "Project updated successfully." });
         } else {
-            const { id, ...data } = projectData;
-            const docRef = await addDoc(collection(db, "projects"), data);
-            setProjects([...projects, { ...projectData, id: docRef.id } as Project]);
+            const docRef = await addDoc(collection(db, "projects"), projectData);
+            setProjects([...projects, { ...projectData, id: docRef.id }]);
             toast({ title: "Success", description: "Project added successfully." });
         }
         setFormOpen(false);
         setSelectedProject(null);
     } catch (error) {
+        console.error("Save error: ", error);
         toast({ variant: "destructive", title: "Error", description: "Failed to save project." });
     }
   };

@@ -31,6 +31,8 @@ const formSchema = z.object({
   tags: z.string().min(1, "At least one tag is required"),
 });
 
+type ProjectFormValues = z.infer<typeof formSchema>;
+
 type ProjectFormProps = {
   project: Project | null;
   onSave: (data: Omit<Project, 'id'> & { id?: string }) => void;
@@ -42,7 +44,7 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
   const [isImproving, startImproving] = useTransition();
   const [isGenerating, startGenerating] = useTransition();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<ProjectFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: project?.title || "",
@@ -55,12 +57,17 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    onSave({
-      id: project?.id,
+  const onSubmit = (values: ProjectFormValues) => {
+    const projectData = {
       ...values,
       tags: values.tags.split(",").map((tag) => tag.trim()),
-    });
+    };
+    
+    if (project) {
+        onSave({ id: project.id, ...projectData });
+    } else {
+        onSave(projectData);
+    }
   };
 
   const handleImproveDescription = () => {
