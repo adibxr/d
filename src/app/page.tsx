@@ -27,7 +27,7 @@ const socialLinks = [
   { icon: Twitter, href: "https://twitter.com/adibxr", label: "Twitter" },
   { icon: Instagram, href: "https://instagram.com/adi.bxr", label: "Instagram" },
   { icon: Linkedin, href: "https://www.linkedin.com/in/adityasingh-02/", label: "LinkedIn" },
-  { icon: Mail, href: "mailto:admin@immortaladi.live", label: "Email" },
+  { icon: Mail, href: "mailto:ccidcop@gmail.com", label: "Email" },
 ];
 
 function AuthButton() {
@@ -238,7 +238,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0, transition: { delay: 0.7 } }}
             >
                 <Button size="lg" asChild>
-                  <Link href="#contact">
+                  <Link href="mailto:ccidcop@gmail.com">
                     Get in Touch <ArrowRight className="ml-2" />
                   </Link>
                 </Button>
