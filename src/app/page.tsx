@@ -85,7 +85,7 @@ function AuthButton() {
 function Header() {
     return (
         <motion.header 
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-full px-4"
+            className="fixed top-4 left-0 right-0 z-50 flex justify-center"
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
