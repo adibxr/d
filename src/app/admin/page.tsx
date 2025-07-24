@@ -1,8 +1,7 @@
 
 "use client";
 
-import { useState, useTransition, useId, useEffect } from "react";
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
 import { Project } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,85 +36,33 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useAuth } from "@/hooks/use-auth";
-import { db, ref, get, set, push, remove, ADMIN_UID } from "@/lib/firebase";
-import { useToast } from "@/hooks/use-toast";
 
-
-const PortfolioForPrint = ({ projects }: { projects: Project[] }) => {
-    return (
-      <div className="print-container hidden print:block text-black bg-white p-8">
-        <div className="text-center mb-12">
-            <h1 className="font-headline text-5xl font-bold mb-2">Aditya Raj</h1>
-            <p className="text-xl">Frontend Developer</p>
-            <p className="text-sm">admin@immortaladi.live | immortaladi.live</p>
-        </div>
-        <div className="mb-12">
-            <h2 className="font-headline text-3xl font-bold border-b-2 border-gray-800 pb-2 mb-4">About Me</h2>
-            <p>I'm a passionate Front-end developer from India with a knack for creating beautiful, intuitive, and high-performing web experiences. I love turning complex problems into simple, elegant solutions.</p>
-        </div>
-        <div>
-            <h2 className="font-headline text-3xl font-bold border-b-2 border-gray-800 pb-2 mb-8">Projects</h2>
-            <div className="space-y-10">
-                {projects.map(p => (
-                    <div key={p.id} className="project-item-print">
-                        <h3 className="font-headline text-2xl font-semibold">{p.title}</h3>
-                        {p.tagline && <p className="text-lg italic text-gray-600 mb-2">"{p.tagline}"</p>}
-                        <p className="mb-2">{p.description}</p>
-                        <p className="text-sm"><span className="font-semibold">Live:</span> {p.liveUrl} | <span className="font-semibold">GitHub:</span> {p.githubUrl}</p>
-                    </div>
-                ))}
-            </div>
-        </div>
-      </div>
-    );
-  };
-  
+const staticProjects: Project[] = [
+    {
+      id: '1',
+      title: 'Sample Project 1',
+      description: 'This is a description for the first sample project.',
+      imageUrl: 'https://placehold.co/600x400.png',
+      liveUrl: '#',
+      githubUrl: '#',
+      tags: ['React', 'Next.js'],
+    },
+    {
+      id: '2',
+      title: 'Sample Project 2',
+      description: 'This is another sample project.',
+      imageUrl: 'https://placehold.co/600x400.png',
+      liveUrl: '#',
+      githubUrl: '#',
+      tags: ['TypeScript', 'ShadCN'],
+    },
+  ];
 
 export default function AdminDashboard() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>(staticProjects);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isFormOpen, setFormOpen] = useState(false);
-  const { user, loading } = useAuth();
-  const router = useRouter();
-  const { toast } = useToast();
-  const [isFetching, setIsFetching] = useState(true);
-
-  useEffect(() => {
-    if (!loading && (!user || user.uid !== ADMIN_UID)) {
-      router.push('/');
-    }
-  }, [user, loading, router]);
-
-  const fetchProjects = async () => {
-    setIsFetching(true);
-    try {
-      const projectsRef = ref(db, 'projects');
-      const snapshot = await get(projectsRef);
-      if (snapshot.exists()) {
-        const projectsData = snapshot.val();
-        const projectsList = Object.keys(projectsData).map(key => ({
-          id: key,
-          ...projectsData[key]
-        }));
-        setProjects(projectsList);
-      } else {
-        setProjects([]);
-      }
-    } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to fetch projects." });
-    } finally {
-      setIsFetching(false);
-    }
-  };
-
-  useEffect(() => {
-    if (user) {
-        fetchProjects();
-    }
-  }, [user]);
-
-
+  
   const handleAddNew = () => {
     setSelectedProject(null);
     setFormOpen(true);
@@ -126,83 +73,29 @@ export default function AdminDashboard() {
     setFormOpen(true);
   };
 
-  const handleDelete = async (projectId: string) => {
-    try {
-        const projectRef = ref(db, `projects/${projectId}`);
-        await remove(projectRef);
-        setProjects(projects.filter((p) => p.id !== projectId));
-        toast({ title: "Success", description: "Project deleted successfully." });
-    } catch (error) {
-        toast({ variant: "destructive", title: "Error", description: "Failed to delete project." });
+  const handleDelete = (projectId: string) => {
+    setProjects(projects.filter((p) => p.id !== projectId));
+  };
+
+  const handleSave = (projectData: Omit<Project, 'id'> & { id?: string }) => {
+    if (projectData.id) {
+        setProjects(projects.map((p) => (p.id === projectData.id ? { ...p, ...projectData } : p)));
+    } else {
+        setProjects([...projects, { ...projectData, id: String(Date.now()) }]);
     }
+    setFormOpen(false);
+    setSelectedProject(null);
   };
 
-  const handleSave = async (projectData: Omit<Project, 'id'> & { id?: string }) => {
-    try {
-        if (projectData.id) {
-            const { id, ...data } = projectData;
-            const projectRef = ref(db, `projects/${id}`);
-            await set(projectRef, data);
-            setProjects(projects.map((p) => (p.id === id ? { ...projectData, id } : p)));
-             toast({ title: "Success", description: "Project updated successfully." });
-        } else {
-            const projectsRef = ref(db, 'projects');
-            const newProjectRef = push(projectsRef);
-            await set(newProjectRef, projectData);
-            setProjects([...projects, { ...projectData, id: newProjectRef.key! }]);
-            toast({ title: "Success", description: "Project added successfully." });
-        }
-        setFormOpen(false);
-        setSelectedProject(null);
-        await fetchProjects(); // Refetch to ensure sync
-    } catch (error) {
-        console.error("Save error: ", error);
-        toast({ variant: "destructive", title: "Error", description: "Failed to save project." });
-    }
-  };
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  if (loading || !user || user.uid !== ADMIN_UID) {
-    return (
-        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background text-foreground">
-            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-lg text-muted-foreground">Verifying access...</p>
-        </div>
-    )
-  }
 
   return (
-    <>
-    <div className="min-h-screen bg-secondary/50 p-4 sm:p-8 print:hidden">
-      <style jsx global>{`
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            .print-container, .print-container * {
-                visibility: visible;
-            }
-            .print-container {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-        }
-      `}</style>
+    <div className="min-h-screen bg-secondary/50 p-4 sm:p-8">
       <header className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
             <Link href="/" className="font-headline text-2xl font-bold text-primary">DevCard</Link>
-            <h1 className="text-2xl font-bold font-headline">Admin Panel</h1>
+            <h1 className="text-2xl font-bold font-headline">Admin Panel (Demo)</h1>
         </div>
         <div className="flex items-center gap-4">
-            <Button variant="outline" onClick={handlePrint}>
-                <Download className="mr-2 h-4 w-4" />
-                Download PDF
-            </Button>
             <ThemeToggle />
             <Button asChild>
                 <Link href="/">
@@ -248,16 +141,10 @@ export default function AdminDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isFetching ? (
+                {projects.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center">
-                      <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
-                    </TableCell>
-                  </TableRow>
-                ) : projects.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
-                      No projects found. Add one to get started.
+                      No projects found.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -290,7 +177,7 @@ export default function AdminDashboard() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the project.
+                                This will remove the project from this demonstration.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -312,7 +199,5 @@ export default function AdminDashboard() {
         </CardContent>
       </Card>
     </div>
-    <PortfolioForPrint projects={projects} />
-    </>
   );
 }

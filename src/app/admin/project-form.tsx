@@ -16,10 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { improveProjectDescription } from "@/ai/flows/improve-project-description";
-import { generateProjectTagline } from "@/ai/flows/generate-project-tagline";
 import { Sparkles, Bot, Loader2 } from "lucide-react";
-import { useState, useTransition } from "react";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -41,8 +38,6 @@ type ProjectFormProps = {
 
 export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
   const { toast } = useToast();
-  const [isImproving, startImproving] = useTransition();
-  const [isGenerating, startGenerating] = useTransition();
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(formSchema),
@@ -68,66 +63,8 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
     } else {
         onSave(projectData);
     }
+    toast({ title: "Success", description: "Demo project saved." });
   };
-
-  const handleImproveDescription = () => {
-    const currentDescription = form.getValues("description");
-    if (!currentDescription) {
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Please enter a description first.",
-        });
-        return;
-    }
-
-    startImproving(async () => {
-        try {
-            const result = await improveProjectDescription({ projectDescription: currentDescription });
-            if (result.improvedDescription) {
-                form.setValue("description", result.improvedDescription, { shouldValidate: true });
-                toast({ title: "AI Magic!", description: "Description improved." });
-            }
-            if (result.suggestedTagline && !form.getValues("tagline")) {
-                form.setValue("tagline", result.suggestedTagline, { shouldValidate: true });
-            }
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to improve description.",
-            });
-        }
-    });
-  };
-
-  const handleGenerateTagline = () => {
-    const title = form.getValues("title");
-    const description = form.getValues("description");
-
-    if (!title || !description) {
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Please enter a title and description first.",
-        });
-        return;
-    }
-
-    startGenerating(async () => {
-        try {
-            const result = await generateProjectTagline({ projectName: title, projectDescription: description });
-            form.setValue("tagline", result.tagline, { shouldValidate: true });
-            toast({ title: "AI Magic!", description: "Tagline generated." });
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to generate tagline.",
-            });
-        }
-    });
-  }
 
   return (
     <Form {...form}>
@@ -151,27 +88,13 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
-              <div className="relative">
-                <FormControl>
-                  <Textarea
-                    placeholder="Describe your project..."
-                    className="pr-12"
-                    rows={5}
-                    {...field}
-                  />
-                </FormControl>
-                <Button 
-                    type="button" 
-                    variant="ghost" 
-                    size="icon" 
-                    className="absolute top-2 right-2 text-primary" 
-                    onClick={handleImproveDescription}
-                    disabled={isImproving}
-                    aria-label="Improve description with AI"
-                >
-                    {isImproving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                </Button>
-              </div>
+              <FormControl>
+                <Textarea
+                  placeholder="Describe your project..."
+                  rows={5}
+                  {...field}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -182,22 +105,9 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tagline</FormLabel>
-               <div className="relative">
-                <FormControl>
-                    <Input placeholder="A catchy phrase for your project" {...field} />
-                </FormControl>
-                <Button 
-                    type="button" 
-                    variant="ghost" 
-                    size="icon" 
-                    className="absolute top-1/2 -translate-y-1/2 right-1 text-primary" 
-                    onClick={handleGenerateTagline}
-                    disabled={isGenerating}
-                    aria-label="Generate tagline with AI"
-                >
-                    {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bot className="h-4 w-4" />}
-                </Button>
-              </div>
+              <FormControl>
+                  <Input placeholder="A catchy phrase for your project" {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

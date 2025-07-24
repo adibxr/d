@@ -7,11 +7,6 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { Github, Linkedin, Twitter, Mail, ArrowRight, Rss, User as UserIcon, LogIn, LogOut, Loader2, Instagram } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useAuth } from '@/hooks/use-auth';
-import { auth, signOut, db, ref, get } from '@/lib/firebase';
-import { useToast } from '@/hooks/use-toast';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { motion } from "framer-motion";
 import { useEffect, useState } from 'react';
 import type { Project } from '@/lib/types';
@@ -25,55 +20,39 @@ const socialLinks = [
   { icon: Mail, href: "mailto:admin@immortaladi.live", label: "Email" },
 ];
 
-function AuthButton() {
-    const { user, loading } = useAuth();
-    const { toast } = useToast();
+const staticProjects: Project[] = [
+    {
+      id: '1',
+      title: 'Sample Project 1',
+      description: 'This is a description for the first sample project. It showcases my skills in web development and design.',
+      tagline: 'An example tagline',
+      imageUrl: 'https://placehold.co/600x400.png',
+      liveUrl: '#',
+      githubUrl: '#',
+      tags: ['React', 'Next.js', 'Tailwind'],
+    },
+    {
+      id: '2',
+      title: 'Sample Project 2',
+      description: 'This is another sample project. It demonstrates my ability to build complex and interactive user interfaces.',
+      tagline: 'Another great tagline',
+      imageUrl: 'https://placehold.co/600x400.png',
+      liveUrl: '#',
+      githubUrl: '#',
+      tags: ['TypeScript', 'ShadCN', 'Framer Motion'],
+    },
+     {
+      id: '3',
+      title: 'Sample Project 3',
+      description: 'This is a third project example, showing my versatility and passion for creating amazing web experiences.',
+      tagline: 'A catchy phrase',
+      imageUrl: 'https://placehold.co/600x400.png',
+      liveUrl: '#',
+      githubUrl: '#',
+      tags: ['Firebase', 'Genkit', 'AI'],
+    },
+  ];
 
-    const handleSignOut = async () => {
-        try {
-            await signOut(auth);
-            toast({ title: "Signed Out", description: "You have successfully signed out." });
-        } catch (error) {
-            toast({ variant: "destructive", title: "Sign Out Failed", description: "Could not sign you out." });
-        }
-    };
-
-    if (loading) {
-        return <div className="w-9 h-9 bg-muted rounded-full animate-pulse" />;
-    }
-
-    if (user) {
-        return (
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full">
-                        <Avatar className="w-8 h-8">
-                           <AvatarImage src={user.photoURL || 'https://raw.githubusercontent.com/adibxr/public/main/logo.png'} alt={user.displayName || 'User'} />
-                           <AvatarFallback>{user.email?.charAt(0).toUpperCase() || 'A'}</AvatarFallback>
-                        </Avatar>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                        <Link href="/admin">Admin Panel</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleSignOut}>
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Sign Out</span>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        );
-    }
-
-    return (
-        <Button variant="ghost" size="icon" asChild>
-            <Link href="/login" aria-label="Sign In">
-                <LogIn />
-            </Link>
-        </Button>
-    );
-}
 
 function Header() {
   return (
@@ -97,7 +76,6 @@ function Header() {
               <Link href="#contact" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Contact</Link>
             </nav>
             <ThemeToggle />
-            <AuthButton />
           </div>
         </div>
       </div>
@@ -159,31 +137,11 @@ const sectionVariants = {
 export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const projectsRef = ref(db, 'projects');
-        const snapshot = await get(projectsRef);
-        if (snapshot.exists()) {
-          const projectsData = snapshot.val();
-          const projectsList = Object.keys(projectsData).map(key => ({
-            id: key,
-            ...projectsData[key]
-          }));
-          setProjects(projectsList);
-        } else {
-          setProjects([]);
-        }
-      } catch (error) {
-        toast({ variant: 'destructive', title: 'Error fetching projects', description: 'Could not load project data.' });
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProjects();
-  }, [toast]);
+    setProjects(staticProjects);
+    setLoading(false);
+  }, []);
 
 
   return (
