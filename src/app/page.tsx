@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { CursorTracker } from '@/components/cursor-tracker';
 
 
 const socialLinks = [
@@ -143,7 +144,7 @@ function ProjectCard({ project, index }: { project: Project, index: number }) {
         </CardContent>
         <CardFooter className="flex justify-between">
             <Button variant="outline" asChild>
-                <Link href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="relative z-10">
+                <Link href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="relative z-10 group">
                     <span className="absolute inset-0 bg-white/10 dark:bg-white/5 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
                     <span className="relative flex items-center">
                         <Github className="mr-2" /> GitHub
@@ -151,7 +152,7 @@ function ProjectCard({ project, index }: { project: Project, index: number }) {
                 </Link>
             </Button>
             <Button asChild>
-                <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="relative z-10">
+                <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="relative z-10 group">
                     <span className="absolute inset-0 bg-white/20 dark:bg-black/20 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
                     <span className="relative flex items-center">
                         Live Demo <ArrowRight className="ml-2" />
@@ -193,6 +194,7 @@ export default function Home() {
 
   return (
     <div className="bg-background text-foreground">
+      <CursorTracker />
       <Header />
       
       <main className="container mx-auto px-4 pt-28">
