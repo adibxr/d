@@ -36,32 +36,42 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
-
-const staticProjects: Project[] = [
-    {
-      id: '1',
-      title: 'Sample Project 1',
-      description: 'This is a description for the first sample project.',
-      imageUrl: 'https://placehold.co/600x400.png',
-      liveUrl: '#',
-      githubUrl: '#',
-      tags: ['React', 'Next.js'],
-    },
-    {
-      id: '2',
-      title: 'Sample Project 2',
-      description: 'This is another sample project.',
-      imageUrl: 'https://placehold.co/600x400.png',
-      liveUrl: '#',
-      githubUrl: '#',
-      tags: ['TypeScript', 'ShadCN'],
-    },
-  ];
+import { db, ref, onValue, remove as removeProject, off } from '@/lib/firebase';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
 
 export default function AdminDashboard() {
-  const [projects, setProjects] = useState<Project[]>(staticProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isFormOpen, setFormOpen] = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+  
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    const projectsRef = ref(db, 'projects');
+    const unsubscribe = onValue(projectsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const projectList = Object.keys(data).map(key => ({
+          id: key,
+          ...data[key]
+        }));
+        setProjects(projectList);
+      } else {
+        setProjects([]);
+      }
+      setLoading(false);
+    });
+
+    return () => off(projectsRef, 'value', unsubscribe);
+  }, []);
   
   const handleAddNew = () => {
     setSelectedProject(null);
@@ -74,26 +84,33 @@ export default function AdminDashboard() {
   };
 
   const handleDelete = (projectId: string) => {
-    setProjects(projects.filter((p) => p.id !== projectId));
+    const projectRef = ref(db, `projects/${projectId}`);
+    removeProject(projectRef);
   };
 
-  const handleSave = (projectData: Omit<Project, 'id'> & { id?: string }) => {
-    if (projectData.id) {
-        setProjects(projects.map((p) => (p.id === projectData.id ? { ...p, ...projectData } : p)));
-    } else {
-        setProjects([...projects, { ...projectData, id: String(Date.now()) }]);
-    }
+  const handleSaveComplete = () => {
     setFormOpen(false);
     setSelectedProject(null);
   };
 
+  if (authLoading || loading) {
+    return (
+        <div className="flex justify-center items-center min-h-screen">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+    )
+  }
+
+  if (!user) {
+    return null; // or a redirect component
+  }
 
   return (
     <div className="min-h-screen bg-secondary/50 p-4 sm:p-8">
       <header className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
             <Link href="/" className="font-headline text-2xl font-bold text-primary">DevCard</Link>
-            <h1 className="text-2xl font-bold font-headline">Admin Panel (Demo)</h1>
+            <h1 className="text-2xl font-bold font-headline">Admin Panel</h1>
         </div>
         <div className="flex items-center gap-4">
             <ThemeToggle />
@@ -123,7 +140,7 @@ export default function AdminDashboard() {
                 </DialogHeader>
                 <ProjectForm
                   project={selectedProject}
-                  onSave={handleSave}
+                  onSave={handleSaveComplete}
                   onCancel={() => setFormOpen(false)}
                 />
               </DialogContent>
@@ -177,7 +194,7 @@ export default function AdminDashboard() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                This will remove the project from this demonstration.
+                                This action cannot be undone. This will permanently delete the project from the database.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

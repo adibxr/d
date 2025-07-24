@@ -10,6 +10,16 @@ import Link from 'next/link';
 import { motion } from "framer-motion";
 import { useEffect, useState } from 'react';
 import type { Project } from '@/lib/types';
+import { useAuth } from '@/hooks/use-auth';
+import { signOut, auth, db, ref, onValue, off } from '@/lib/firebase';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 
 const socialLinks = [
@@ -20,38 +30,56 @@ const socialLinks = [
   { icon: Mail, href: "mailto:admin@immortaladi.live", label: "Email" },
 ];
 
-const staticProjects: Project[] = [
-    {
-      id: '1',
-      title: 'Sample Project 1',
-      description: 'This is a description for the first sample project. It showcases my skills in web development and design.',
-      tagline: 'An example tagline',
-      imageUrl: 'https://placehold.co/600x400.png',
-      liveUrl: '#',
-      githubUrl: '#',
-      tags: ['React', 'Next.js', 'Tailwind'],
-    },
-    {
-      id: '2',
-      title: 'Sample Project 2',
-      description: 'This is another sample project. It demonstrates my ability to build complex and interactive user interfaces.',
-      tagline: 'Another great tagline',
-      imageUrl: 'https://placehold.co/600x400.png',
-      liveUrl: '#',
-      githubUrl: '#',
-      tags: ['TypeScript', 'ShadCN', 'Framer Motion'],
-    },
-     {
-      id: '3',
-      title: 'Sample Project 3',
-      description: 'This is a third project example, showing my versatility and passion for creating amazing web experiences.',
-      tagline: 'A catchy phrase',
-      imageUrl: 'https://placehold.co/600x400.png',
-      liveUrl: '#',
-      githubUrl: '#',
-      tags: ['Firebase', 'Genkit', 'AI'],
-    },
-  ];
+function AuthButton() {
+    const { user, loading } = useAuth();
+    const [loggingOut, setLoggingOut] = useState(false);
+
+    const handleLogout = async () => {
+        setLoggingOut(true);
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.error("Error signing out:", error);
+        } finally {
+            setLoggingOut(false);
+        }
+    };
+
+    if (loading) {
+        return <Button variant="ghost" size="icon" disabled><Loader2 className="animate-spin" /></Button>
+    }
+    
+    if (user) {
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                        <UserIcon />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                        <Link href="/admin">Admin</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout} disabled={loggingOut}>
+                        {loggingOut ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />}
+                        <span>Log out</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        )
+    }
+
+    return (
+        <Button variant="ghost" size="icon" asChild>
+            <Link href="/login">
+                <LogIn />
+            </Link>
+        </Button>
+    )
+}
 
 
 function Header() {
@@ -75,6 +103,7 @@ function Header() {
               <Link href="#projects" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Projects</Link>
               <Link href="#contact" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Contact</Link>
             </nav>
+            <AuthButton />
             <ThemeToggle />
           </div>
         </div>
@@ -139,8 +168,20 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setProjects(staticProjects);
-    setLoading(false);
+    const projectsRef = ref(db, 'projects');
+    const unsubscribe = onValue(projectsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const projectsList = Object.keys(data).map(key => ({
+                id: key,
+                ...data[key]
+            }));
+            setProjects(projectsList);
+        }
+        setLoading(false);
+    });
+
+    return () => off(projectsRef, 'value', unsubscribe);
   }, []);
 
 

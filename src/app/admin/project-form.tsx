@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Sparkles, Bot, Loader2 } from "lucide-react";
+import { db, ref, push, set } from '@/lib/firebase';
+import { useState } from "react";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -32,12 +34,13 @@ type ProjectFormValues = z.infer<typeof formSchema>;
 
 type ProjectFormProps = {
   project: Project | null;
-  onSave: (data: Omit<Project, 'id'> & { id?: string }) => void;
+  onSave: () => void;
   onCancel: () => void;
 };
 
 export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
   const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(formSchema),
@@ -48,22 +51,35 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
       imageUrl: project?.imageUrl || "https://placehold.co/600x400.png",
       liveUrl: project?.liveUrl || "",
       githubUrl: project?.githubUrl || "",
-      tags: project?.tags.join(", ") || "",
+      tags: project?.tags?.join(", ") || "",
     },
   });
 
-  const onSubmit = (values: ProjectFormValues) => {
+  const onSubmit = async (values: ProjectFormValues) => {
+    setIsSaving(true);
     const projectData = {
       ...values,
       tags: values.tags.split(",").map((tag) => tag.trim()),
     };
     
-    if (project) {
-        onSave({ id: project.id, ...projectData });
-    } else {
-        onSave(projectData);
+    try {
+        if (project) {
+            const projectRef = ref(db, `projects/${project.id}`);
+            await set(projectRef, projectData);
+            toast({ title: "Success", description: "Project updated successfully." });
+        } else {
+            const projectsRef = ref(db, 'projects');
+            const newProjectRef = push(projectsRef);
+            await set(newProjectRef, projectData);
+            toast({ title: "Success", description: "Project added successfully." });
+        }
+        onSave();
+    } catch (error) {
+        console.error("Failed to save project:", error);
+        toast({ title: "Error", description: "Failed to save project.", variant: "destructive" });
+    } finally {
+        setIsSaving(false);
     }
-    toast({ title: "Success", description: "Demo project saved." });
   };
 
   return (
@@ -171,7 +187,10 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit">Save Project</Button>
+          <Button type="submit" disabled={isSaving}>
+            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            Save Project
+          </Button>
         </div>
       </form>
     </Form>
