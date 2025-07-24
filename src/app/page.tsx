@@ -8,7 +8,7 @@ import { Github, Linkedin, Twitter, Mail, ArrowRight, Rss, User as UserIcon, Log
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { auth, signOut, db, collection, getDocs } from '@/lib/firebase';
+import { auth, signOut, db, ref, get } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -164,9 +164,18 @@ export default function Home() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "projects"));
-        const projectsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project));
-        setProjects(projectsData);
+        const projectsRef = ref(db, 'projects');
+        const snapshot = await get(projectsRef);
+        if (snapshot.exists()) {
+          const projectsData = snapshot.val();
+          const projectsList = Object.keys(projectsData).map(key => ({
+            id: key,
+            ...projectsData[key]
+          }));
+          setProjects(projectsList);
+        } else {
+          setProjects([]);
+        }
       } catch (error) {
         toast({ variant: 'destructive', title: 'Error fetching projects', description: 'Could not load project data.' });
       } finally {

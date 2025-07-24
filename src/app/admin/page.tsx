@@ -38,7 +38,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
-import { db, collection, getDocs, doc, setDoc, addDoc, deleteDoc, ADMIN_UID } from "@/lib/firebase";
+import { db, ref, get, set, push, remove, ADMIN_UID } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 
 
@@ -90,9 +90,18 @@ export default function AdminDashboard() {
   const fetchProjects = async () => {
     setIsFetching(true);
     try {
-      const querySnapshot = await getDocs(collection(db, "projects"));
-      const projectsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project));
-      setProjects(projectsData);
+      const projectsRef = ref(db, 'projects');
+      const snapshot = await get(projectsRef);
+      if (snapshot.exists()) {
+        const projectsData = snapshot.val();
+        const projectsList = Object.keys(projectsData).map(key => ({
+          id: key,
+          ...projectsData[key]
+        }));
+        setProjects(projectsList);
+      } else {
+        setProjects([]);
+      }
     } catch (error) {
       toast({ variant: "destructive", title: "Error", description: "Failed to fetch projects." });
     } finally {
@@ -119,7 +128,8 @@ export default function AdminDashboard() {
 
   const handleDelete = async (projectId: string) => {
     try {
-        await deleteDoc(doc(db, "projects", projectId));
+        const projectRef = ref(db, `projects/${projectId}`);
+        await remove(projectRef);
         setProjects(projects.filter((p) => p.id !== projectId));
         toast({ title: "Success", description: "Project deleted successfully." });
     } catch (error) {
@@ -131,16 +141,20 @@ export default function AdminDashboard() {
     try {
         if (projectData.id) {
             const { id, ...data } = projectData;
-            await setDoc(doc(db, "projects", id), data);
-            setProjects(projects.map((p) => (p.id === id ? { ...p, ...data } : p)));
+            const projectRef = ref(db, `projects/${id}`);
+            await set(projectRef, data);
+            setProjects(projects.map((p) => (p.id === id ? { ...projectData, id } : p)));
              toast({ title: "Success", description: "Project updated successfully." });
         } else {
-            const docRef = await addDoc(collection(db, "projects"), projectData);
-            setProjects([...projects, { ...projectData, id: docRef.id }]);
+            const projectsRef = ref(db, 'projects');
+            const newProjectRef = push(projectsRef);
+            await set(newProjectRef, projectData);
+            setProjects([...projects, { ...projectData, id: newProjectRef.key! }]);
             toast({ title: "Success", description: "Project added successfully." });
         }
         setFormOpen(false);
         setSelectedProject(null);
+        await fetchProjects(); // Refetch to ensure sync
     } catch (error) {
         console.error("Save error: ", error);
         toast({ variant: "destructive", title: "Error", description: "Failed to save project." });
