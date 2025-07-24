@@ -142,16 +142,22 @@ function ProjectCard({ project, index }: { project: Project, index: number }) {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button variant="outline" asChild>
-            <Link href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-              <Github className="mr-2" /> GitHub
-            </Link>
-          </Button>
-          <Button asChild>
-            <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-              Live Demo <ArrowRight className="ml-2" />
-            </Link>
-          </Button>
+            <Button variant="outline" asChild>
+                <Link href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="relative z-10">
+                    <span className="absolute inset-0 bg-white/10 dark:bg-white/5 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                    <span className="relative flex items-center">
+                        <Github className="mr-2" /> GitHub
+                    </span>
+                </Link>
+            </Button>
+            <Button asChild>
+                <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="relative z-10">
+                    <span className="absolute inset-0 bg-white/20 dark:bg-black/20 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                    <span className="relative flex items-center">
+                        Live Demo <ArrowRight className="ml-2" />
+                    </span>
+                </Link>
+            </Button>
         </CardFooter>
       </Card>
     </motion.div>
