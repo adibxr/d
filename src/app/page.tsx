@@ -1,9 +1,18 @@
+
+"use client";
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Github, Linkedin, Twitter, Mail, ArrowRight, Rss } from 'lucide-react';
+import { Github, Linkedin, Twitter, Mail, ArrowRight, Rss, User as UserIcon, LogIn, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/use-auth';
+import { auth, provider, signInWithPopup, signOut } from '@/lib/firebase';
+import { useToast } from '@/hooks/use-toast';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 const projects = [
   {
@@ -42,6 +51,63 @@ const socialLinks = [
   { icon: Mail, href: "mailto:adityasingh.02@outlook.com", label: "Email" },
 ];
 
+function AuthButton() {
+    const { user, loading } = useAuth();
+    const { toast } = useToast();
+
+    const handleSignIn = async () => {
+        try {
+            await signInWithPopup(auth, provider);
+            toast({ title: "Signed In", description: "You have successfully signed in." });
+        } catch (error) {
+            toast({ variant: "destructive", title: "Sign In Failed", description: "Could not sign you in with Google." });
+        }
+    };
+
+    const handleSignOut = async () => {
+        try {
+            await signOut(auth);
+            toast({ title: "Signed Out", description: "You have successfully signed out." });
+        } catch (error) {
+            toast({ variant: "destructive", title: "Sign Out Failed", description: "Could not sign you out." });
+        }
+    };
+
+    if (loading) {
+        return <div className="w-9 h-9 bg-muted rounded-full animate-pulse" />;
+    }
+
+    if (user) {
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                        <Avatar className="w-8 h-8">
+                           <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
+                           <AvatarFallback>{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                        </Avatar>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                        <Link href="/admin">Admin Panel</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleSignOut}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Sign Out</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        );
+    }
+
+    return (
+        <Button variant="ghost" size="icon" onClick={handleSignIn} aria-label="Sign In">
+            <LogIn />
+        </Button>
+    );
+}
+
 function Header() {
   return (
     <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl">
@@ -57,16 +123,14 @@ function Header() {
               />
             <span className="hidden sm:inline">DevCard</span>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <nav className="hidden md:flex items-center gap-1 bg-muted/50 p-1 rounded-full">
               <Link href="#about" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">About</Link>
               <Link href="#projects" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Projects</Link>
               <Link href="#contact" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Contact</Link>
             </nav>
             <ThemeToggle />
-            <Button asChild className="hidden lg:flex">
-              <Link href="/admin">Admin Panel</Link>
-            </Button>
+            <AuthButton />
           </div>
         </div>
       </div>

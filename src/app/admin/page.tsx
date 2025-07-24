@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition, useId } from "react";
+import { useState, useTransition, useId, useEffect } from "react";
+import { useRouter } from 'next/navigation';
 import { Project } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +20,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ProjectForm } from "./project-form";
-import { Download, Edit, PlusCircle, Trash, ExternalLink } from "lucide-react";
+import { Download, Edit, PlusCircle, Trash, ExternalLink, Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +36,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useAuth } from "@/hooks/use-auth";
+import { ADMIN_UID } from "@/lib/firebase";
 
 const initialProjects: Project[] = [
   {
@@ -94,6 +97,15 @@ export default function AdminDashboard() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isFormOpen, setFormOpen] = useState(false);
   const uniqueId = useId();
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && (!user || user.uid !== ADMIN_UID)) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
+
 
   const handleAddNew = () => {
     setSelectedProject(null);
@@ -125,6 +137,14 @@ export default function AdminDashboard() {
     window.print();
   };
 
+  if (loading || !user || user.uid !== ADMIN_UID) {
+    return (
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background text-foreground">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+            <p className="text-lg text-muted-foreground">Verifying access...</p>
+        </div>
+    )
+  }
 
   return (
     <>

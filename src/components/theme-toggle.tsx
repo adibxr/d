@@ -21,15 +21,15 @@ export function ThemeToggle() {
       variant="ghost" 
       size="icon" 
       onClick={toggleTheme} 
-      className="relative w-9 h-9"
+      className="relative w-9 h-9 overflow-hidden"
       aria-label="Toggle theme"
     >
       <AnimatePresence initial={false} mode="wait">
         <motion.div
           key={isDark ? "moon" : "sun"}
-          initial={{ y: -20, opacity: 0, rotate: -90 }}
-          animate={{ y: 0, opacity: 1, rotate: 0 }}
-          exit={{ y: 20, opacity: 0, rotate: 90 }}
+          initial={{ x: -20, opacity: 0, rotate: -90 }}
+          animate={{ x: 0, opacity: 1, rotate: 0 }}
+          exit={{ x: 20, opacity: 0, rotate: 90 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
           className="absolute"
         >
