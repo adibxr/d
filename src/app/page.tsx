@@ -4,46 +4,18 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Github, Linkedin, Twitter, Mail, ArrowRight, Rss, User as UserIcon, LogIn, LogOut } from 'lucide-react';
+import { Github, Linkedin, Twitter, Mail, ArrowRight, Rss, User as UserIcon, LogIn, LogOut, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { auth, signOut } from '@/lib/firebase';
+import { auth, signOut, db, collection, getDocs } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { motion } from "framer-motion";
+import { useEffect, useState } from 'react';
+import type { Project } from '@/lib/types';
 
-
-const projects = [
-  {
-    title: "AI Article Summarizer",
-    description: "An AI-powered tool that provides concise summaries of long articles, making it easy to get key insights quickly.",
-    image: "https://placehold.co/600x400.png",
-    imageHint: "abstract gradient",
-    liveUrl: "#",
-    githubUrl: "#",
-    tags: ["Next.js", "AI", "Tailwind CSS"]
-  },
-  {
-    title: "E-commerce Platform",
-    description: "A full-featured e-commerce website with product listings, a shopping cart, and a secure checkout process.",
-    image: "https://placehold.co/600x400.png",
-    imageHint: "shopping online",
-    liveUrl: "#",
-    githubUrl: "#",
-    tags: ["React", "Node.js", "Stripe"]
-  },
-  {
-    title: "Project Management Tool",
-    description: "A collaborative platform for teams to manage tasks, track progress, and communicate effectively on projects.",
-    image: "https://placehold.co/600x400.png",
-    imageHint: "team collaboration",
-    liveUrl: "#",
-    githubUrl: "#",
-    tags: ["Vue.js", "Firebase", "SCSS"]
-  }
-];
 
 const socialLinks = [
   { icon: Github, href: "https://github.com/adibxr", label: "GitHub" },
@@ -136,7 +108,7 @@ const cardVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-function ProjectCard({ project, index }: { project: typeof projects[0], index: number }) {
+function ProjectCard({ project, index }: { project: Project, index: number }) {
   return (
     <motion.div
       variants={cardVariants}
@@ -148,7 +120,7 @@ function ProjectCard({ project, index }: { project: typeof projects[0], index: n
       <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
         <CardHeader>
           <div className="aspect-video overflow-hidden rounded-md mb-4">
-            <Image src={project.image} alt={project.title} width={600} height={400} className="object-cover w-full h-full transition-transform duration-500 hover:scale-105" data-ai-hint={project.imageHint}/>
+            <Image src={project.imageUrl} alt={project.title} width={600} height={400} className="object-cover w-full h-full transition-transform duration-500 hover:scale-105" data-ai-hint="project image" />
           </div>
           <CardTitle className="font-headline text-xl">{project.title}</CardTitle>
           <CardDescription>{project.description}</CardDescription>
@@ -183,6 +155,26 @@ const sectionVariants = {
 };
 
 export default function Home() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "projects"));
+        const projectsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project));
+        setProjects(projectsData);
+      } catch (error) {
+        toast({ variant: 'destructive', title: 'Error fetching projects', description: 'Could not load project data.' });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
+  }, [toast]);
+
+
   return (
     <div className="bg-background text-foreground">
       <Header />
@@ -255,11 +247,17 @@ export default function Home() {
           <h2 className="font-headline text-3xl md:text-4xl font-bold text-center mb-12">
             My Work
           </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project, index) => (
-              <ProjectCard key={project.title} project={project} index={index} />
-            ))}
-          </div>
+          {loading ? (
+             <div className="flex justify-center">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+             </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {projects.map((project, index) => (
+                <ProjectCard key={project.id} project={project} index={index} />
+              ))}
+            </div>
+          )}
         </motion.section>
         
         <motion.section 

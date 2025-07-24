@@ -1,6 +1,8 @@
 'use client';
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc } from 'firebase/firestore';
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCD5FoayYfZlMeNHph5QCBxVR7FF851R6w",
@@ -14,8 +16,10 @@ const firebaseConfig = {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 const ADMIN_UID = "e95GbAquQtbYOQjW0fucGqjFuRi1";
 
-export { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, ADMIN_UID };
+export { auth, db, onAuthStateChanged, signInWithEmailAndPassword, signOut, ADMIN_UID };
+export { collection, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc };
 export type { User };

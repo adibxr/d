@@ -37,30 +37,9 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
-import { ADMIN_UID } from "@/lib/firebase";
+import { db, collection, getDocs, doc, setDoc, addDoc, deleteDoc, ADMIN_UID } from "@/lib/firebase";
+import { useToast } from "@/hooks/use-toast";
 
-const initialProjects: Project[] = [
-  {
-    id: '1',
-    title: "AI Article Summarizer",
-    description: "An AI-powered tool that provides concise summaries of long articles, making it easy to get key insights quickly.",
-    tagline: "Get the gist, fast.",
-    imageUrl: "https://placehold.co/600x400.png",
-    liveUrl: "#",
-    githubUrl: "#",
-    tags: ["Next.js", "AI", "Tailwind CSS"]
-  },
-  {
-    id: '2',
-    title: "E-commerce Platform",
-    description: "A full-featured e-commerce website with product listings, a shopping cart, and a secure checkout process.",
-    tagline: "Your online store, simplified.",
-    imageUrl: "https://placehold.co/600x400.png",
-    liveUrl: "#",
-    githubUrl: "#",
-    tags: ["React", "Node.js", "Stripe"]
-  },
-];
 
 const PortfolioForPrint = ({ projects }: { projects: Project[] }) => {
     return (
@@ -93,18 +72,36 @@ const PortfolioForPrint = ({ projects }: { projects: Project[] }) => {
   
 
 export default function AdminDashboard() {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isFormOpen, setFormOpen] = useState(false);
-  const uniqueId = useId();
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
+  const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
     if (!loading && (!user || user.uid !== ADMIN_UID)) {
       router.push('/');
     }
   }, [user, loading, router]);
+
+  const fetchProjects = async () => {
+    setIsFetching(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, "projects"));
+      const projectsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project));
+      setProjects(projectsData);
+    } catch (error) {
+      toast({ variant: "destructive", title: "Error", description: "Failed to fetch projects." });
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
 
   const handleAddNew = () => {
@@ -117,20 +114,34 @@ export default function AdminDashboard() {
     setFormOpen(true);
   };
 
-  const handleDelete = (projectId: string) => {
-    setProjects(projects.filter((p) => p.id !== projectId));
+  const handleDelete = async (projectId: string) => {
+    try {
+        await deleteDoc(doc(db, "projects", projectId));
+        setProjects(projects.filter((p) => p.id !== projectId));
+        toast({ title: "Success", description: "Project deleted successfully." });
+    } catch (error) {
+        toast({ variant: "destructive", title: "Error", description: "Failed to delete project." });
+    }
   };
 
-  const handleSave = (projectData: Project) => {
-    if (selectedProject) {
-      setProjects(
-        projects.map((p) => (p.id === projectData.id ? projectData : p))
-      );
-    } else {
-      setProjects([...projects, { ...projectData, id: `${uniqueId}-${projects.length + 1}` }]);
+  const handleSave = async (projectData: Omit<Project, 'id'> & { id?: string }) => {
+    try {
+        if (projectData.id) {
+            const { id, ...data } = projectData;
+            await setDoc(doc(db, "projects", id), data);
+            setProjects(projects.map((p) => (p.id === id ? projectData as Project : p)));
+             toast({ title: "Success", description: "Project updated successfully." });
+        } else {
+            const { id, ...data } = projectData;
+            const docRef = await addDoc(collection(db, "projects"), data);
+            setProjects([...projects, { ...projectData, id: docRef.id } as Project]);
+            toast({ title: "Success", description: "Project added successfully." });
+        }
+        setFormOpen(false);
+        setSelectedProject(null);
+    } catch (error) {
+        toast({ variant: "destructive", title: "Error", description: "Failed to save project." });
     }
-    setFormOpen(false);
-    setSelectedProject(null);
   };
 
   const handlePrint = () => {
@@ -220,56 +231,69 @@ export default function AdminDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {projects.map((project) => (
-                  <TableRow key={project.id}>
-                    <TableCell>
-                      <Image
-                        src={project.imageUrl}
-                        alt={project.title}
-                        width={60}
-                        height={40}
-                        className="rounded-md object-cover"
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{project.title}</TableCell>
-                    <TableCell className="hidden md:table-cell max-w-sm truncate">{project.description}</TableCell>
-                    <TableCell className="hidden lg:table-cell">{project.tags.join(', ')}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(project)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete the project.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(project.id)} className="bg-destructive hover:bg-destructive/90">
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                      </div>
+                {isFetching ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : projects.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      No projects found. Add one to get started.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  projects.map((project) => (
+                    <TableRow key={project.id}>
+                      <TableCell>
+                        <Image
+                          src={project.imageUrl}
+                          alt={project.title}
+                          width={60}
+                          height={40}
+                          className="rounded-md object-cover"
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">{project.title}</TableCell>
+                      <TableCell className="hidden md:table-cell max-w-sm truncate">{project.description}</TableCell>
+                      <TableCell className="hidden lg:table-cell">{project.tags.join(', ')}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => handleEdit(project)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                              <Trash className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete the project.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(project.id)} className="bg-destructive hover:bg-destructive/90">
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
         </CardContent>
       </Card>
-      <p className="text-center text-sm text-muted-foreground mt-8">Note: This is a demo admin panel. Data is not persisted. In a real application, this page should be protected by authentication.</p>
     </div>
     <PortfolioForPrint projects={projects} />
     </>

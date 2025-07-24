@@ -33,7 +33,7 @@ const formSchema = z.object({
 
 type ProjectFormProps = {
   project: Project | null;
-  onSave: (data: Project) => void;
+  onSave: (data: Omit<Project, 'id'> & { id?: string }) => void;
   onCancel: () => void;
 };
 
@@ -57,11 +57,10 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     onSave({
-      id: project?.id || Date.now().toString(),
+      id: project?.id,
       ...values,
       tags: values.tags.split(",").map((tag) => tag.trim()),
     });
-    toast({ title: "Success", description: "Project saved successfully." });
   };
 
   const handleImproveDescription = () => {
