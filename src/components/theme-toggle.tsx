@@ -3,9 +3,9 @@
 import * as React from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
+import { AnimatePresence, motion } from "framer-motion"
 
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
@@ -17,15 +17,25 @@ export function ThemeToggle() {
   }
 
   return (
-    <div className="flex items-center space-x-2">
-        <Sun className="h-[1.2rem] w-[1.2rem]" />
-        <Switch
-            id="theme-switch"
-            checked={isDark}
-            onCheckedChange={toggleTheme}
-            aria-label="Toggle theme"
-        />
-        <Moon className="h-[1.2rem] w-[1.2rem]" />
-    </div>
+    <Button 
+      variant="ghost" 
+      size="icon" 
+      onClick={toggleTheme} 
+      className="relative w-9 h-9"
+      aria-label="Toggle theme"
+    >
+      <AnimatePresence initial={false} mode="wait">
+        <motion.div
+          key={isDark ? "moon" : "sun"}
+          initial={{ y: -20, opacity: 0, rotate: -90 }}
+          animate={{ y: 0, opacity: 1, rotate: 0 }}
+          exit={{ y: 20, opacity: 0, rotate: 90 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="absolute"
+        >
+          {isDark ? <Moon className="h-[1.2rem] w-[1.2rem]" /> : <Sun className="h-[1.2rem] w-[1.2rem]" />}
+        </motion.div>
+      </AnimatePresence>
+    </Button>
   )
 }

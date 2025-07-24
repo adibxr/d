@@ -44,17 +44,24 @@ const socialLinks = [
 
 function Header() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-20">
-          <Link href="/" className="text-2xl font-headline font-bold text-primary">
-            DevCard
+    <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl">
+      <div className="container mx-auto px-4 py-2 bg-background/50 backdrop-blur-lg rounded-full border border-border/20 shadow-lg">
+        <div className="flex justify-between items-center h-12">
+          <Link href="/" className="text-2xl font-headline font-bold text-primary flex items-center gap-2">
+            <Image 
+                src="https://i.imgur.com/26rM2A5.png"
+                alt="Aditya Singh"
+                width={40}
+                height={40}
+                className="rounded-full object-cover border-2 border-primary/50"
+              />
+            <span className="hidden sm:inline">DevCard</span>
           </Link>
           <div className="flex items-center gap-4">
-            <nav className="hidden md:flex gap-6">
-              <Link href="#about" className="text-sm font-medium hover:text-primary transition-colors">About</Link>
-              <Link href="#projects" className="text-sm font-medium hover:text-primary transition-colors">Projects</Link>
-              <Link href="#contact" className="text-sm font-medium hover:text-primary transition-colors">Contact</Link>
+            <nav className="hidden md:flex items-center gap-1 bg-muted/50 p-1 rounded-full">
+              <Link href="#about" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">About</Link>
+              <Link href="#projects" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Projects</Link>
+              <Link href="#contact" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Contact</Link>
             </nav>
             <ThemeToggle />
             <Button asChild className="hidden lg:flex">
@@ -105,12 +112,12 @@ export default function Home() {
     <div className="bg-background text-foreground">
       <Header />
       
-      <main className="container mx-auto px-4 pt-20">
+      <main className="container mx-auto px-4 pt-28">
         <section id="about" className="py-24 text-center">
           <div className="max-w-4xl mx-auto">
             <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-8">
               <Image 
-                src="https://placehold.co/200x200.png"
+                src="https://i.imgur.com/26rM2A5.png"
                 alt="Aditya Singh"
                 width={200}
                 height={200}
