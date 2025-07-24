@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Github, Linkedin, Twitter, Mail, ArrowRight, Rss, User as UserIcon, LogIn, LogOut, Loader2, Instagram } from 'lucide-react';
+import { Github, Linkedin, Twitter, Mail, ArrowRight, Rss, User as UserIcon, LogIn, LogOut, Loader2, Instagram, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from "framer-motion";
@@ -21,6 +21,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { CursorTracker } from '@/components/cursor-tracker';
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 const socialLinks = [
@@ -82,35 +84,67 @@ function AuthButton() {
     )
 }
 
+function NavMenu() {
+    return (
+        <>
+            <Link href="#about" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">About</Link>
+            <Link href="#projects" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Projects</Link>
+            <Link href="#contact" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Contact</Link>
+        </>
+    )
+}
+
 
 function Header() {
-  return (
-    <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl">
-      <div className="container mx-auto px-4 py-2 bg-background/50 backdrop-blur-lg rounded-full border border-border/20 shadow-lg">
-        <div className="flex justify-between items-center h-12">
-          <Link href="/" className="text-2xl font-headline font-bold text-primary flex items-center gap-2">
-            <Image 
-                src="https://raw.githubusercontent.com/adibxr/public/main/logo.png"
-                alt="Aditya Raj"
-                width={40}
-                height={40}
-                className="rounded-full object-cover border-2 border-primary/50"
-              />
-            <span className="hidden sm:inline">Adi</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <nav className="hidden md:flex items-center gap-1 bg-muted/50 p-1 rounded-full">
-              <Link href="#about" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">About</Link>
-              <Link href="#projects" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Projects</Link>
-              <Link href="#contact" className="text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">Contact</Link>
-            </nav>
-            <AuthButton />
-            <ThemeToggle />
+    const isMobile = useIsMobile();
+    return (
+        <motion.header 
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl"
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <div className="container mx-auto px-4 py-2 bg-background/50 backdrop-blur-lg rounded-full border border-border/20 shadow-lg">
+            <div className="flex justify-between items-center h-12">
+              <Link href="/" className="text-2xl font-headline font-bold text-primary flex items-center gap-2">
+                <Image 
+                    src="https://raw.githubusercontent.com/adibxr/public/main/logo.png"
+                    alt="Aditya Raj"
+                    width={40}
+                    height={40}
+                    className="rounded-full object-cover border-2 border-primary/50"
+                  />
+                <span className="hidden sm:inline">Adi</span>
+              </Link>
+              <div className="flex items-center gap-1">
+                <nav className="hidden md:flex items-center gap-1 bg-muted/50 p-1 rounded-full">
+                  <NavMenu />
+                </nav>
+                <div className="flex items-center gap-1">
+                    <AuthButton />
+                    <ThemeToggle />
+                    {isMobile && (
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <Menu />
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="right">
+                                <div className="flex flex-col items-center justify-center h-full gap-8">
+                                    <SheetClose asChild><Link href="#about" className="text-2xl font-medium hover:text-primary transition-colors">About</Link></SheetClose>
+                                    <SheetClose asChild><Link href="#projects" className="text-2xl font-medium hover:text-primary transition-colors">Projects</Link></SheetClose>
+                                    <SheetClose asChild><Link href="#contact" className="text-2xl font-medium hover:text-primary transition-colors">Contact</Link></SheetClose>
+                                </div>
+                            </SheetContent>
+                        </Sheet>
+                    )}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </header>
-  );
+        </motion.header>
+    );
 }
 
 const cardVariants = {
