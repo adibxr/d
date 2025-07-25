@@ -253,6 +253,15 @@ export default function Home() {
                 className="rounded-full object-cover border-4 border-primary shadow-lg"
                 data-ai-hint="profile picture"
               />
+              <div className="absolute bottom-2 -right-2 bg-background/80 backdrop-blur-sm rounded-full p-1">
+                <div className="flex items-center gap-2 bg-green-500/20 text-green-400 rounded-full px-3 py-1 text-sm border border-green-500/50">
+                    <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    Available
+                </div>
+              </div>
             </motion.div>
             <motion.h1 
               className="font-headline text-4xl md:text-6xl font-bold mb-4"
@@ -389,3 +398,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
