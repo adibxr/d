@@ -272,9 +272,9 @@ export default function Home() {
               animate={{ opacity: 1, y: 0, transition: { delay: 0.7 } }}
             >
                 <Button size="lg" asChild>
-                  <Link href="mailto:ccidcop@gmail.com">
+                  <a href="mailto:ccidcop@gmail.com">
                     Get in Touch <ArrowRight className="ml-2" />
-                  </Link>
+                  </a>
                 </Button>
             </motion.div>
           </div>
