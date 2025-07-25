@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Sparkles, Bot, Loader2 } from "lucide-react";
 import { db, ref, push, set } from '@/lib/firebase';
 import { useState } from "react";
+import { generateProjectTagline } from "@/ai/flows/generate-project-tagline";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -41,6 +42,7 @@ type ProjectFormProps = {
 export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(formSchema),
@@ -54,6 +56,44 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
       tags: project?.tags?.join(", ") || "",
     },
   });
+
+  const handleGenerateTagline = async () => {
+    const title = form.getValues("title");
+    const description = form.getValues("description");
+    if (!title || !description) {
+      toast({
+        title: "Heads up!",
+        description: "Please fill out the title and description first.",
+        variant: "default",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const result = await generateProjectTagline({
+        projectName: title,
+        projectDescription: description,
+      });
+      if (result.tagline) {
+        form.setValue("tagline", result.tagline);
+        toast({
+          title: "Tagline Generated!",
+          description: "The AI-powered tagline has been added.",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to generate tagline:", error);
+      toast({
+        title: "Error",
+        description: "Couldn't generate a tagline. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
 
   const onSubmit = async (values: ProjectFormValues) => {
     setIsSaving(true);
@@ -121,9 +161,15 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tagline</FormLabel>
-              <FormControl>
-                  <Input placeholder="A catchy phrase for your project" {...field} />
-              </FormControl>
+               <div className="flex gap-2">
+                <FormControl>
+                    <Input placeholder="A catchy phrase for your project" {...field} />
+                </FormControl>
+                 <Button type="button" variant="outline" size="icon" onClick={handleGenerateTagline} disabled={isGenerating}>
+                    {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 text-primary" />}
+                    <span className="sr-only">Generate Tagline</span>
+                </Button>
+              </div>
               <FormMessage />
             </FormItem>
           )}
