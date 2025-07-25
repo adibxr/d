@@ -111,7 +111,7 @@ function Header() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
         >
-          <div className="container mx-auto px-4 py-2 bg-background/50 backdrop-blur-lg rounded-full border border-border/20 shadow-lg max-w-5xl">
+          <div className="container mx-auto px-4 py-2 bg-background/50 backdrop-blur-lg rounded-full border border-foreground/10 shadow-lg max-w-5xl">
             <div className="flex justify-between items-center h-12">
               <Link href="/" className="text-2xl font-headline font-bold text-primary flex items-center gap-2">
                 <Image 
