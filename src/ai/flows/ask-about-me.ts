@@ -11,6 +11,7 @@
 import { ai } from '@/ai/genkit';
 import { getProjects } from '@/services/project-service';
 import { z } from 'genkit';
+import { googleAI } from '@genkit-ai/googleai';
 
 const AskAboutMeInputSchema = z.object({
   question: z.string().describe('The user\'s question about Aditya or his projects.'),
@@ -43,6 +44,7 @@ const prompt = ai.definePrompt({
   input: { schema: AskAboutMeInputSchema },
   output: { schema: AskAboutMeOutputSchema },
   tools: [getProjectsTool],
+  model: googleAI('gemini-2.0-flash'),
   prompt: `You are a helpful and friendly AI assistant for Aditya Raj's personal portfolio. Your name is AdiBot. You are having a conversation with a visitor to the site.
 
 Your main goal is to answer questions about Aditya and his projects in a conversational, engaging, and slightly witty tone. Keep your answers concise and to the point, usually 1-3 sentences.
@@ -80,3 +82,4 @@ const askAboutMeFlow = ai.defineFlow(
     return output!;
   }
 );
+
