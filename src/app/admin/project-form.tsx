@@ -14,9 +14,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, Bot, Loader2 } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
 import { db, ref, push, set } from '@/lib/firebase';
 import { useState } from "react";
 import { generateProjectTagline } from "@/ai/flows/generate-project-tagline";
@@ -26,8 +27,8 @@ const formSchema = z.object({
   description: z.string().min(1, "Description is required"),
   tagline: z.string().optional(),
   imageUrl: z.string().url("Must be a valid URL"),
-  liveUrl: z.string().url("Must be a valid URL"),
-  githubUrl: z.string().url("Must be a valid URL"),
+  liveUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
+  githubUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
   tags: z.string().min(1, "At least one tag is required"),
 });
 
@@ -99,7 +100,7 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
     setIsSaving(true);
     const projectData = {
       ...values,
-      tags: values.tags.split(",").map((tag) => tag.trim()),
+      tags: values.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
     };
     
     try {
@@ -124,57 +125,72 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Project Title</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., My Awesome App" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Describe your project..."
-                  rows={5}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="tagline"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tagline</FormLabel>
-               <div className="flex gap-2">
-                <FormControl>
-                    <Input placeholder="A catchy phrase for your project" {...field} />
-                </FormControl>
-                 <Button type="button" variant="outline" size="icon" onClick={handleGenerateTagline} disabled={isGenerating}>
-                    {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 text-primary" />}
-                    <span className="sr-only">Generate Tagline</span>
-                </Button>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                <FormLabel>Project Title</FormLabel>
+                <FormControl>
+                    <Input placeholder="e.g., My Awesome App" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                    <Textarea
+                    placeholder="Describe your project in a few sentences..."
+                    rows={4}
+                    {...field}
+                    />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="tagline"
+            render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                <FormLabel>Tagline (Optional)</FormLabel>
+                <div className="flex gap-2">
+                    <FormControl>
+                        <Input placeholder="A catchy phrase for your project" {...field} />
+                    </FormControl>
+                    <Button type="button" variant="outline" size="icon" onClick={handleGenerateTagline} disabled={isGenerating} className="flex-shrink-0">
+                        {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 text-primary" />}
+                        <span className="sr-only">Generate Tagline</span>
+                    </Button>
+                </div>
+                <FormDescription>Click the magic wand to generate one with AI!</FormDescription>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+             <FormField
+            control={form.control}
+            name="tags"
+            render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                <FormLabel>Tags</FormLabel>
+                <FormControl>
+                    <Input placeholder="React, Next.js, Tailwind" {...field} />
+                </FormControl>
+                 <FormDescription>Enter comma-separated tags.</FormDescription>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
             <FormField
             control={form.control}
             name="imageUrl"
@@ -214,28 +230,16 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
                 </FormItem>
             )}
             />
-            <FormField
-            control={form.control}
-            name="tags"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Tags</FormLabel>
-                <FormControl>
-                    <Input placeholder="React, Next.js, Tailwind" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
+           
         </div>
         
         <div className="flex justify-end gap-4 pt-4">
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
             Cancel
           </Button>
           <Button type="submit" disabled={isSaving}>
             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            Save Project
+            {project ? 'Save Changes' : 'Create Project'}
           </Button>
         </div>
       </form>
