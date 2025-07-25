@@ -221,10 +221,17 @@ export default function Home() {
 
 
   return (
-    <div className="bg-background text-foreground">
+    <div className="bg-background text-foreground relative overflow-hidden">
+      <div className="fixed inset-0 select-none pointer-events-none z-0">
+            <div className="absolute inset-0 flex items-center justify-center">
+                <p className="text-[24vw] font-bold text-foreground/5 dark:text-foreground/5 font-headline">
+                    ADIBXR
+                </p>
+            </div>
+      </div>
       <Header />
       
-      <main className="container mx-auto px-4 pt-28">
+      <main className="container mx-auto px-4 pt-28 relative z-10">
         <motion.section 
           id="about" 
           className="py-24 text-center"
@@ -374,7 +381,7 @@ export default function Home() {
         </motion.section>
       </main>
       
-      <footer className="py-8 border-t">
+      <footer className="py-8 border-t relative z-10">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
           &copy; {new Date().getFullYear()} Aditya Raj. All Rights Reserved.
         </div>
@@ -382,11 +389,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
-
-    
-
-    
