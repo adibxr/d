@@ -9,6 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const GenerateProjectTaglineInputSchema = z.object({
@@ -30,6 +31,7 @@ const prompt = ai.definePrompt({
   name: 'generateProjectTaglinePrompt',
   input: {schema: GenerateProjectTaglineInputSchema},
   output: {schema: GenerateProjectTaglineOutputSchema},
+  model: googleAI('gemini-2.0-flash'),
   prompt: `You are a creative marketing expert specializing in generating catchy taglines for software projects.
 
   Given the project name and description, generate a concise and engaging tagline that captures the essence of the project.
