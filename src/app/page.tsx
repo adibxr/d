@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Badge } from '@/components/ui/badge';
 
 
 const socialLinks = [
@@ -28,6 +29,10 @@ const socialLinks = [
   { icon: Instagram, href: "https://instagram.com/adi.bxr", label: "Instagram" },
   { icon: Linkedin, href: "https://www.linkedin.com/in/adityasingh-02/", label: "LinkedIn" },
   { icon: Mail, href: "mailto:ccidcop@gmail.com", label: "Email" },
+];
+
+const techStack = [
+    "Firebase", "GitHub", "Python", "React", "HTML", "CSS", "JavaScript", "Figma", "Canva", "Cloudflare"
 ];
 
 function AuthButton() {
@@ -264,6 +269,31 @@ export default function Home() {
                 </Button>
             </motion.div>
           </div>
+        </motion.section>
+
+        <motion.section
+            id="tech-stack"
+            className="py-24 text-center"
+            variants={sectionVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+        >
+            <h2 className="font-headline text-3xl md:text-4xl font-bold mb-12">My Tech Stack</h2>
+            <div className="flex flex-wrap justify-center gap-4 max-w-3xl mx-auto">
+                {techStack.map((tech, index) => (
+                    <motion.div
+                        key={tech}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.05 }}
+                    >
+                        <Badge variant="secondary" className="text-lg px-4 py-2 rounded-lg shadow-sm hover:bg-primary/10 transition-colors">
+                            {tech}
+                        </Badge>
+                    </motion.div>
+                ))}
+            </div>
         </motion.section>
         
         <motion.section 
