@@ -64,7 +64,14 @@ export default function AiChatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-between p-4 antialiased overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-between p-4 antialiased overflow-hidden relative">
+        <div className="fixed inset-0 select-none pointer-events-none z-0">
+            <div className="absolute inset-0 flex items-center justify-center">
+                <p className="text-[24vw] font-bold text-foreground/5 dark:text-foreground/5 font-headline">
+                    ADIBXR
+                </p>
+            </div>
+        </div>
         <div className="fixed top-0 left-0 w-full flex justify-between items-center p-4 md:p-6 z-20">
             <Button variant="outline" className="rounded-full" asChild>
                 <Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Portfolio</Link>
@@ -76,7 +83,7 @@ export default function AiChatPage() {
             </Button>
         </div>
 
-        <div className="w-full max-w-2xl flex-grow flex flex-col justify-end pt-24 pb-4">
+        <div className="w-full max-w-2xl flex-grow flex flex-col justify-end pt-24 pb-4 z-10">
              <AnimatePresence>
                 {messages.length === 0 && (
                      <motion.div 
@@ -157,7 +164,7 @@ export default function AiChatPage() {
             </div>
         </div>
 
-      <div className="w-full max-w-2xl sticky bottom-4">
+      <div className="w-full max-w-2xl sticky bottom-4 z-10">
         {messages.length === 0 && (
              <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 mb-4">
                 {suggestionChips.map((chip) => (
@@ -169,7 +176,7 @@ export default function AiChatPage() {
                     >
                         <Button 
                             variant="outline" 
-                            className="rounded-full"
+                            className="rounded-full bg-background/50 backdrop-blur-lg"
                             onClick={() => handleSendMessage(chip.prompt)}
                             disabled={loading}
                         >
@@ -186,7 +193,7 @@ export default function AiChatPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask me anything..."
-            className="w-full rounded-full h-14 pl-6 pr-16 text-base"
+            className="w-full rounded-full h-14 pl-6 pr-16 text-base bg-background/50 backdrop-blur-lg"
             disabled={loading}
           />
           <Button 
