@@ -32,7 +32,16 @@ const socialLinks = [
 ];
 
 const techStack = [
-    "Firebase", "GitHub", "Python", "React", "HTML", "CSS", "JavaScript", "Figma", "Canva", "Cloudflare"
+    { name: "Firebase", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg" },
+    { name: "GitHub", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" },
+    { name: "Python", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" },
+    { name: "React", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
+    { name: "HTML5", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" },
+    { name: "CSS3", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" },
+    { name: "JavaScript", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" },
+    { name: "Figma", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" },
+    { name: "Canva", logo: "https://cdn.worldvectorlogo.com/logos/canva-1.svg" },
+    { name: "Cloudflare", logo: "https://cdn.worldvectorlogo.com/logos/cloudflare.svg" },
 ];
 
 function AuthButton() {
@@ -280,17 +289,25 @@ export default function Home() {
             viewport={{ once: true, amount: 0.2 }}
         >
             <h2 className="font-headline text-3xl md:text-4xl font-bold mb-12">My Tech Stack</h2>
-            <div className="flex flex-wrap justify-center gap-4 max-w-3xl mx-auto">
+            <div className="flex flex-wrap justify-center items-center gap-8 max-w-4xl mx-auto">
                 {techStack.map((tech, index) => (
                     <motion.div
-                        key={tech}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.05 }}
+                        key={tech.name}
+                        className="text-center"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        title={tech.name}
                     >
-                        <Badge variant="secondary" className="text-lg px-4 py-2 rounded-lg shadow-sm hover:bg-primary/10 transition-colors">
-                            {tech}
-                        </Badge>
+                        <div className="p-4 bg-muted/50 rounded-full w-24 h-24 flex items-center justify-center transition-all duration-300 hover:bg-primary/10 hover:shadow-lg hover:scale-110">
+                            <Image
+                                src={tech.logo}
+                                alt={tech.name}
+                                width={48}
+                                height={48}
+                                className="object-contain"
+                            />
+                        </div>
                     </motion.div>
                 ))}
             </div>
@@ -364,3 +381,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
