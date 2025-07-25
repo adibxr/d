@@ -39,6 +39,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { db, ref, onValue, remove as removeProject, off } from '@/lib/firebase';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
+import { Badge } from "@/components/ui/badge";
 
 export default function AdminDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
