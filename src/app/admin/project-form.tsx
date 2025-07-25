@@ -126,7 +126,7 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             <FormField
             control={form.control}
             name="title"
@@ -135,23 +135,6 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
                 <FormLabel>Project Title</FormLabel>
                 <FormControl>
                     <Input placeholder="e.g., My Awesome App" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                    <Textarea
-                    placeholder="Describe your project in a few sentences..."
-                    rows={4}
-                    {...field}
-                    />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -177,6 +160,23 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
                 </FormItem>
             )}
             />
+            <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                    <Textarea
+                    placeholder="Describe your project in a few sentences..."
+                    rows={4}
+                    {...field}
+                    />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
              <FormField
             control={form.control}
             name="tags"
@@ -195,7 +195,7 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
             control={form.control}
             name="imageUrl"
             render={({ field }) => (
-                <FormItem>
+                <FormItem className="md:col-span-2">
                 <FormLabel>Image URL</FormLabel>
                 <FormControl>
                     <Input placeholder="https://placehold.co/600x400.png" {...field} />
