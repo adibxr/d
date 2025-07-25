@@ -40,7 +40,7 @@ const techStack = [
     { name: "CSS3", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" },
     { name: "JavaScript", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" },
     { name: "Figma", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" },
-    { name: "Canva", logo: "https://cdn.worldvectorlogo.com/logos/canva-1.svg" },
+    { name: "Git", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
     { name: "Cloudflare", logo: "https://cdn.worldvectorlogo.com/logos/cloudflare.svg" },
 ];
 
@@ -381,6 +381,8 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
 
