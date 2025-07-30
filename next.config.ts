@@ -34,6 +34,12 @@ const nextConfig: NextConfig = {
           hostname: 'www.cloudflare.com',
           port: '',
           pathname: '/**'
+      },
+      {
+          protocol: 'https',
+          hostname: 'entrepreneurhandbook.co.uk',
+          port: '',
+          pathname: '/**'
       }
     ],
   },
