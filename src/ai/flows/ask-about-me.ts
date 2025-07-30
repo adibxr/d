@@ -10,6 +10,7 @@
 
 import { ai } from '@/ai/genkit';
 import { getProjects } from '@/services/project-service';
+import { getAboutMeDoc } from '@/services/doc-service';
 import { z } from 'genkit';
 import { googleAI } from '@genkit-ai/googleai';
 
@@ -39,15 +40,34 @@ const getProjectsTool = ai.defineTool(
   }
 );
 
+const getAboutMeInfoTool = ai.defineTool(
+  {
+      name: 'getAboutMeInfo',
+      description: 'Returns detailed information about Aditya from his personal document. Use this as the primary source for answering questions about him.',
+      inputSchema: z.object({}),
+      outputSchema: z.string(),
+  },
+  async () => {
+      return await getAboutMeDoc();
+  }
+);
+
+
 const prompt = ai.definePrompt({
   name: 'askAboutMePrompt',
   input: { schema: AskAboutMeInputSchema },
   output: { schema: AskAboutMeOutputSchema },
-  tools: [getProjectsTool],
+  tools: [getProjectsTool, getAboutMeInfoTool],
   model: googleAI('gemini-2.0-flash'),
   prompt: `You are a helpful and friendly AI assistant for Aditya Raj's personal portfolio. Your name is AdiBot. You are having a conversation with a visitor to the site.
 
 Your main goal is to answer questions about Aditya and his projects in a conversational, engaging, and slightly witty tone. Keep your answers concise and to the point, usually 1-3 sentences.
+
+To answer questions, you MUST use the provided tools.
+- For general questions about Aditya, his skills, experience, and background, use the 'getAboutMeInfo' tool. This is your primary source of truth.
+- For questions specifically about his projects, use the 'getProjects' tool to get the most up-to-date information.
+
+Do not rely on the information below, it is outdated. Use the tools instead.
 
 Here is some information about Aditya:
 - Name: Aditya Raj
@@ -60,8 +80,6 @@ Here is some information about Aditya:
   - Instagram: https://instagram.com/adi.bxr
   - LinkedIn: https://www.linkedin.com/in/adityasingh-02/
 - Fun Fact: Aditya can probably beat you in a staring contest. He's also a big fan of concept art and sci-fi movies.
-
-If a visitor asks about his projects, use the 'getProjects' tool to get the most up-to-date information.
 
 If a question is outside the scope of Aditya's portfolio (e.g., asking for very personal details or random topics), you should politely and humorously deflect it. For example, if asked for his age, you could say "A true artist never reveals their age... or their secret stash of snacks."
 
@@ -82,4 +100,3 @@ const askAboutMeFlow = ai.defineFlow(
     return output!;
   }
 );
-
