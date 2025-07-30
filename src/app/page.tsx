@@ -41,7 +41,7 @@ const techStack = [
     { name: "JavaScript", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" },
     { name: "Figma", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" },
     { name: "Git", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
-    { name: "Cloudflare", logo: "https://cdn.worldvectorlogo.com/logos/cloudflare.svg" },
+    { name: "Cloudflare", logo: "https://www.cloudflare.com/img/logo-web-badges/cf-logo-on-white-bg.svg" },
 ];
 
 function AuthButton() {
@@ -398,6 +398,8 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
 

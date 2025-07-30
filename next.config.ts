@@ -19,31 +19,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'i.imgur.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
         hostname: 'raw.githubusercontent.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'github.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'static.wixstatic.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'entrepreneurhandbook.co.uk',
         port: '',
         pathname: '/**',
       },
@@ -54,13 +30,15 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https',
-        hostname: 'cdn.worldvectorlogo.com',
-        port: '',
-        pathname: '/**',
-      },
+          protocol: 'https',
+          hostname: 'www.cloudflare.com',
+          port: '',
+          pathname: '/**'
+      }
     ],
   },
 };
 
 export default nextConfig;
+
+    
