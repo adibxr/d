@@ -125,13 +125,13 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
-        <div className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             <FormField
             control={form.control}
             name="title"
             render={({ field }) => (
-                <FormItem>
+                <FormItem className="md:col-span-2">
                 <FormLabel>Project Title</FormLabel>
                 <FormControl>
                     <Input placeholder="e.g., My Awesome App" {...field} />
@@ -140,11 +140,12 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
                 </FormItem>
             )}
             />
+            
             <FormField
             control={form.control}
             name="tagline"
             render={({ field }) => (
-                <FormItem>
+                <FormItem className="md:col-span-2">
                 <FormLabel>Tagline</FormLabel>
                 <div className="flex gap-2">
                     <FormControl>
@@ -160,11 +161,12 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
                 </FormItem>
             )}
             />
+            
             <FormField
             control={form.control}
             name="description"
             render={({ field }) => (
-                <FormItem>
+                <FormItem className="md:col-span-2">
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                     <Textarea
@@ -177,11 +179,12 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
                 </FormItem>
             )}
             />
+            
             <FormField
             control={form.control}
             name="imageUrl"
             render={({ field }) => (
-                <FormItem>
+                <FormItem className="md:col-span-2">
                 <FormLabel>Image URL</FormLabel>
                 <FormControl>
                     <Input placeholder="https://placehold.co/600x400.png" {...field} />
@@ -190,39 +193,39 @@ export function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
                 </FormItem>
             )}
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                control={form.control}
-                name="liveUrl"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Live Demo URL</FormLabel>
-                    <FormControl>
-                        <Input placeholder="https://example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="githubUrl"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>GitHub URL</FormLabel>
-                    <FormControl>
-                        <Input placeholder="https://github.com/user/repo" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-            </div>
+            
+            <FormField
+            control={form.control}
+            name="liveUrl"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Live Demo URL</FormLabel>
+                <FormControl>
+                    <Input placeholder="https://example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="githubUrl"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>GitHub URL</FormLabel>
+                <FormControl>
+                    <Input placeholder="https://github.com/user/repo" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            
              <FormField
             control={form.control}
             name="tags"
             render={({ field }) => (
-                <FormItem>
+                <FormItem className="md:col-span-2">
                 <FormLabel>Tags</FormLabel>
                 <FormControl>
                     <Input placeholder="React, Next.js, Tailwind" {...field} />

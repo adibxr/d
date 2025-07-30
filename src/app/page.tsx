@@ -128,7 +128,6 @@ function Header() {
                     <a href="#about" onClick={(e) => handleScroll(e, '#about')} className="cursor-pointer text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">ABOUT</a>
                     <a href="#projects" onClick={(e) => handleScroll(e, '#projects')} className="cursor-pointer text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">PROJECTS</a>
                     <a href="#contact" onClick={(e) => handleScroll(e, '#contact')} className="cursor-pointer text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">CONTACT</a>
-                    <Link href="/ai" className="cursor-pointer text-sm font-medium hover:bg-background/70 hover:text-primary transition-colors px-4 py-1.5 rounded-full">AI</Link>
                 </nav>
                 <div className="flex items-center gap-1">
                     <AuthButton />
