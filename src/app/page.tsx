@@ -77,6 +77,9 @@ function AuthButton() {
                     <DropdownMenuItem asChild>
                         <Link href="/admin">Admin</Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href="/ai">AI</Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleLogout} disabled={loggingOut}>
                         {loggingOut ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />}
                         <span>Log out</span>
@@ -403,4 +406,5 @@ export default function Home() {
     
 
     
+
 
