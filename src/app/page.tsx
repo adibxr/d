@@ -27,7 +27,7 @@ const socialLinks = [
   { icon: Github, href: "https://github.com/adibxr", label: "GitHub" },
   { icon: Twitter, href: "https://twitter.com/adibxr", label: "Twitter" },
   { icon: Instagram, href: "https://instagram.com/adi.bxr", label: "Instagram" },
-  { icon: Linkedin, href: "https://www.linkedin.com/in/adityasingh-02/", label: "LinkedIn" },
+  { icon: Linkedin, href: "https://www.linkedin.com/in/adibxr/", label: "LinkedIn" },
   { icon: Mail, href: "mailto:ccidcop@gmail.com", label: "Email" },
 ];
 
@@ -406,5 +406,3 @@ export default function Home() {
     
 
     
-
-
